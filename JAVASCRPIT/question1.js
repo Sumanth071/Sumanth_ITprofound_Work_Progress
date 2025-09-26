@@ -10,3 +10,5 @@ a = a - b;//a-b (30-10) = a=20
 console.log(a);
 console.log(b); 
 
+
+
