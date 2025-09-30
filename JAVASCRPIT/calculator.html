@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Simple Calculator</title>
+</head>
+<body>
+  <script>
+    function add(a, b) {
+        return a + b;
+    }
+
+    function subtract(a, b) {
+        return a - b;
+    }
+
+    function multiply(a, b) {
+        return a * b;
+    }
+
+    function divide(a, b) {
+        if (b === 0) {
+            return "Error: Division by zero";
+        }
+        return a / b;
+    }
+    function percent(a, b) {
+        return (a / 100) * b;
+    }
+
+
+    function calculator(a, b, operation) {
+        switch (operation) {
+            case 'add': return add(a, b);
+            case 'subtract': return subtract(a, b);
+            case 'multiply': return multiply(a, b);
+            case 'divide': return divide(a, b);
+            case 'percent': return percent(a, b);
+            default: return "Error: Invalid operation";
+        }
+    }
+
+    const num1 = parseFloat(prompt("Enter the first number:"));
+    const num2 = parseFloat(prompt("Enter the second number:"));
+    const operation = prompt("Enter operation (add, subtract, multiply, divide,percent):");
+
+    alert("Result: " + calculator(num1, num2, operation));
+  </script>
+</body>
+</html>

@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Digital Savings Wallet</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #f0f0f0;
+        }
+
+        .container {
+            text-align: center;
+            padding: 25px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            background-color: #fff;
+            width: 420px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        h1 { margin-bottom: 20px; }
+
+        input[type="number"], input[type="password"] {
+            width: calc(100% - 22px);
+            padding: 10px;
+            margin: 10px 0;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+
+        .button-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .button {
+            flex: 1 1 140px;
+            padding: 10px 15px;
+            font-size: 16px;
+            cursor: pointer;
+            border: none;
+            border-radius: 5px;
+            background-color: blue;
+            color: white;
+        }
+
+        .button:hover { background-color: darkblue; }
+
+        #balance {
+            margin-top: 15px;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        #history {
+            margin-top: 10px;
+            text-align: left;
+            max-height: 180px;
+            overflow-y: auto;
+            border-top: 1px solid #ccc;
+            padding-top: 10px;
+        }
+
+        #history div { margin-bottom: 5px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>DIGITAL SAVINGS WALLET </h1>
+        <input type="password" id="pin" placeholder="Enter 4-digit PIN" maxlength="4" />
+        <input type="number" id="amount" placeholder="Enter amount" />
+        <div class="button-container">
+            <button class="button" id="depositBtn">Deposit</button>
+            <button class="button" id="withdrawBtn">Withdraw</button>
+            <button class="button" id="checkBalanceBtn">Check Balance</button>
+            <button class="button" id="viewHistoryBtn">Transaction History</button>
+            <button class="button" id="resetBtn">Reset</button>
+        </div>
+        <div id="balance">Balance: ₹0</div>
+        <div id="history"></div>
+    </div>
+
+    <script>
+ 
+        let balance = 0;
+        let transactions = [];
+
+        const PIN = "1234";
+
+        function formatINR(amount) {
+            return amount.toLocaleString('en-IN', { style: 'currency', currency: 'INR' });
+        }
+
+        function validatePin() {
+            let pinInput = document.getElementById("pin").value;
+            if(pinInput !== PIN) {
+                alert("Incorrect PIN!");
+                return false;
+            }
+            return true;
+        }
+
+        function deposit() {
+            if(!validatePin()) return;
+
+            let amount = parseInt(document.getElementById("amount").value);
+            if(isNaN(amount) || amount < 50 || amount > 1000000) {
+                alert("Deposit must be ₹50 - ₹10,00,000 per transaction.");
+                return;
+            }
+
+            balance += amount;
+            transactions.push({type: 'Deposit', amount, date: new Date().toLocaleString()});
+            updateUI();
+        }
+
+        function withdraw() {
+            if(!validatePin()) return;
+
+            let amount = parseInt(document.getElementById("amount").value);
+            if(isNaN(amount) || amount < 50 || amount > 1000000) {
+                alert("Withdrawal must be ₹50 - ₹10,00,000 per transaction.");
+                return;
+            } 
+            if(amount > balance) {
+                alert("Insufficient balance!");
+                return;
+            }
+
+            balance -= amount;
+            transactions.push({type: 'Withdraw', amount, date: new Date().toLocaleString()});
+            updateUI();
+        }
+
+        function checkBalance() {
+            if(!validatePin()) return;
+            alert("Your current balance is " + formatINR(balance));
+        }
+
+        function viewHistory() {
+            if(!validatePin()) return;
+
+            const historyDiv = document.getElementById("history");
+            historyDiv.innerHTML = "";
+            if(transactions.length === 0) {
+                historyDiv.innerText = "No transactions yet.";
+                return;
+            }
+            transactions.slice().reverse().forEach(tx => {
+                const div = document.createElement("div");
+                div.innerText = `${tx.date} → ${tx.type}: ${formatINR(tx.amount)}`;
+                historyDiv.appendChild(div);
+            });
+        }
+
+        function reset() {
+            if(!validatePin()) return;
+
+            if(confirm("Are you sure you want to reset your account?")) {
+                balance = 0;
+                transactions = [];
+                updateUI();
+            }
+        }
+
+        function updateUI() {
+            document.getElementById("balance").innerText = "Balance: " + formatINR(balance);
+            document.getElementById("amount").value = "";
+            document.getElementById("pin").value = "";
+        }
+
+        
+        document.getElementById("depositBtn").addEventListener("click", deposit);
+        document.getElementById("withdrawBtn").addEventListener("click", withdraw);
+        document.getElementById("checkBalanceBtn").addEventListener("click", checkBalance);
+        document.getElementById("viewHistoryBtn").addEventListener("click", viewHistory);
+        document.getElementById("resetBtn").addEventListener("click", reset);     
+        updateUI();
+    </script>
+</body>
+</html>
