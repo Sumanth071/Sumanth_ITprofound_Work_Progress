@@ -3,25 +3,30 @@ import axios from "axios";
 import cors from "cors";
 import dotenv from "dotenv";
 
+
 dotenv.config();
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 
-const API_URL = "https://api.groq.com/openai/v1/chat/completions";
+
+const PORT = process.env.PORT || 5000;
+const API_URL = process.env.GROQ_API_URL;
+const API_KEY = process.env.GROQ_API_KEY;
 
 app.post("/chat", async (req, res) => {
   try {
+
     const response = await axios.post(
       API_URL,
       {
-        model: "llama-3.1-8b-instant",
-        messages: req.body.messages,
+        model: "llama-3.1-8b-instant", 
+        messages: req.body.messages,   
       },
       {
         headers: {
-          Authorization: `Bearer ${process.env.GROQ_API_KEY}`,
+          Authorization: `Bearer ${API_KEY}`,
           "Content-Type": "application/json",
         },
       }
@@ -34,6 +39,6 @@ app.post("/chat", async (req, res) => {
   }
 });
 
-app.listen(5000, () => {
-  console.log("Backend running on http://localhost:5000");
+app.listen(PORT, () => {
+  console.log(`Backend running on http://localhost:${PORT}`);
 });

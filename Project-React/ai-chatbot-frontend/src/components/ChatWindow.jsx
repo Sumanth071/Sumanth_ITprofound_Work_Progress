@@ -5,7 +5,7 @@ import { getGroqResponse } from "../api";
 
 export default function ChatWindow() {
   const [messages, setMessages] = useState([
-    { sender: "bot", text: "Hello  I’m your AI assistant!" },
+    { sender: "bot", text: "Hello  I’m your AI assistant" },
   ]);
   const [typing, setTyping] = useState(false);
   const messagesEndRef = useRef(null);
@@ -36,7 +36,7 @@ export default function ChatWindow() {
       <div className="chat-header">AI Assistant</div>
 
       <div className="messages">
-        {messages.map((m, i) => (
+        {messages.map((m,i) => (
           <Message key={i} sender={m.sender} text={m.text} />
         ))}
         {typing && <Message sender="bot" typing={true} />}

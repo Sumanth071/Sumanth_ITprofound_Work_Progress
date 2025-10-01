@@ -72,13 +72,16 @@
         }
 
         #history div { margin-bottom: 5px; }
+
+        .deposit { color: green; }
+        .withdraw { color: red; }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>DIGITAL SAVINGS WALLET </h1>
+        <h1>DIGITAL SAVINGS WALLET</h1>
         <input type="password" id="pin" placeholder="Enter 4-digit PIN" maxlength="4" />
-        <input type="number" id="amount" placeholder="Enter amount" />
+        <input type="number" id="amount" placeholder="Enter amount (INR)" />
         <div class="button-container">
             <button class="button" id="depositBtn">Deposit</button>
             <button class="button" id="withdrawBtn">Withdraw</button>
@@ -86,24 +89,30 @@
             <button class="button" id="viewHistoryBtn">Transaction History</button>
             <button class="button" id="resetBtn">Reset</button>
         </div>
-        <div id="balance">Balance: ₹0</div>
+        <div id="balance">Balance: ₹0 ($0.00)</div>
         <div id="history"></div>
     </div>
 
     <script>
- 
         let balance = 0;
         let transactions = [];
-
         const PIN = "1234";
 
+        // Conversion rate (1 INR = 0.012 USD approx)
+        const INR_TO_USD = 0.012;
+
         function formatINR(amount) {
-            return amount.toLocaleString('en-IN', { style: 'currency', currency: 'INR' });
+            return amount.toLocaleString("en-IN", { style: "currency", currency: "INR" });
+        }
+
+        function formatUSD(amountInINR) {
+            let usd = amountInINR * INR_TO_USD;
+            return usd.toLocaleString("en-US", { style: "currency", currency: "USD" });
         }
 
         function validatePin() {
             let pinInput = document.getElementById("pin").value;
-            if(pinInput !== PIN) {
+            if (pinInput !== PIN) {
                 alert("Incorrect PIN!");
                 return false;
             }
@@ -111,62 +120,63 @@
         }
 
         function deposit() {
-            if(!validatePin()) return;
+            if (!validatePin()) return;
 
             let amount = parseInt(document.getElementById("amount").value);
-            if(isNaN(amount) || amount < 50 || amount > 1000000) {
+            if (isNaN(amount) || amount < 50 || amount > 1000000) {
                 alert("Deposit must be ₹50 - ₹10,00,000 per transaction.");
                 return;
             }
 
             balance += amount;
-            transactions.push({type: 'Deposit', amount, date: new Date().toLocaleString()});
+            transactions.push({ type: "Deposit", amount, date: new Date().toLocaleString() });
             updateUI();
         }
 
         function withdraw() {
-            if(!validatePin()) return;
+            if (!validatePin()) return;
 
             let amount = parseInt(document.getElementById("amount").value);
-            if(isNaN(amount) || amount < 50 || amount > 1000000) {
+            if (isNaN(amount) || amount < 50 || amount > 1000000) {
                 alert("Withdrawal must be ₹50 - ₹10,00,000 per transaction.");
                 return;
-            } 
-            if(amount > balance) {
+            }
+            if (amount > balance) {
                 alert("Insufficient balance!");
                 return;
             }
 
             balance -= amount;
-            transactions.push({type: 'Withdraw', amount, date: new Date().toLocaleString()});
+            transactions.push({ type: "Withdraw", amount, date: new Date().toLocaleString() });
             updateUI();
         }
 
         function checkBalance() {
-            if(!validatePin()) return;
-            alert("Your current balance is " + formatINR(balance));
+            if (!validatePin()) return;
+            alert("Your current balance is " + formatINR(balance) + " (" + formatUSD(balance) + ")");
         }
 
         function viewHistory() {
-            if(!validatePin()) return;
+            if (!validatePin()) return;
 
             const historyDiv = document.getElementById("history");
             historyDiv.innerHTML = "";
-            if(transactions.length === 0) {
+            if (transactions.length === 0) {
                 historyDiv.innerText = "No transactions yet.";
                 return;
             }
-            transactions.slice().reverse().forEach(tx => {
+            transactions.slice().reverse().forEach((tx) => {
                 const div = document.createElement("div");
-                div.innerText = `${tx.date} → ${tx.type}: ${formatINR(tx.amount)}`;
+                div.className = tx.type.toLowerCase();
+                div.innerText = `${tx.date} → ${tx.type}: ${formatINR(tx.amount)} (${formatUSD(tx.amount)})`;
                 historyDiv.appendChild(div);
             });
         }
 
         function reset() {
-            if(!validatePin()) return;
+            if (!validatePin()) return;
 
-            if(confirm("Are you sure you want to reset your account?")) {
+            if (confirm("Are you sure you want to reset your account?")) {
                 balance = 0;
                 transactions = [];
                 updateUI();
@@ -174,17 +184,17 @@
         }
 
         function updateUI() {
-            document.getElementById("balance").innerText = "Balance: " + formatINR(balance);
+            document.getElementById("balance").innerText =
+                "Balance: " + formatINR(balance) + " (" + formatUSD(balance) + ")";
             document.getElementById("amount").value = "";
             document.getElementById("pin").value = "";
         }
 
-        
         document.getElementById("depositBtn").addEventListener("click", deposit);
         document.getElementById("withdrawBtn").addEventListener("click", withdraw);
         document.getElementById("checkBalanceBtn").addEventListener("click", checkBalance);
         document.getElementById("viewHistoryBtn").addEventListener("click", viewHistory);
-        document.getElementById("resetBtn").addEventListener("click", reset);     
+        document.getElementById("resetBtn").addEventListener("click", reset);
         updateUI();
     </script>
 </body>
